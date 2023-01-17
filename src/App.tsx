@@ -79,7 +79,7 @@ export default function App() {
               className="first-note"
               onClick={createNewNote}
             >
-              Create one now
+              Create one now I m on the "first branch test"
             </button>
           </div>
 
