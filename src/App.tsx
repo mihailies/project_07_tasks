@@ -12,17 +12,20 @@ export interface Note {
 }
 
 export default function App() {
-  
+
   // console.log("App main body")
-  const [notes, setNotes] = React.useState( () =>
-    JSON.parse(localStorage.getItem("notes") || "[]")  as Note[]);
+  const [notes, setNotes] = React.useState(() => {
+    console.log("initializing notes from local storage");
+    return JSON.parse(localStorage.getItem("notes") || "[]") as Note[];
+  });
   const [currentNoteId, setCurrentNoteId] = React.useState(
     (notes[0] && notes[0].id) || ""
-  ) 
+  )
 
-  React.useEffect(()=>{   
-    localStorage.setItem("notes", JSON.stringify(notes));    
-  },[notes])
+  React.useEffect(() => {
+    console.log("writing notes to localStorage on render if changes exist")
+    localStorage.setItem("notes", JSON.stringify(notes));
+  }, [notes])
 
   function createNewNote() {
     const newNote: Note = {
@@ -64,8 +67,7 @@ export default function App() {
               newNote={createNewNote}
             />
             {
-              currentNoteId &&
-              notes.length > 0 &&
+              currentNoteId &&              
               <Editor
                 currentNote={findCurrentNote()}
                 updateNote={updateNote}

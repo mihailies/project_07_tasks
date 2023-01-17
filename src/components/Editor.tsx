@@ -1,7 +1,7 @@
 import React from "react"
 import ReactMde from "react-mde"
 import Showdown from "showdown"
-import App, { Note } from "../App"
+import { Note } from "../App"
 
 
 export interface EditorProps {
