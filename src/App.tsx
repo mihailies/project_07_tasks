@@ -14,10 +14,15 @@ export interface Note {
 export default function App() {
 
   // console.log("App main body")
-  const [notes, setNotes] = React.useState(() => {
-    console.log("initializing notes from local storage");
-    return JSON.parse(localStorage.getItem("notes") || "[]") as Note[];
-  });
+  const [notes, setNotes] = React.useState(
+    // LAZY State initialization
+    // - passing a function as a parameter to useState method, will determine te run of the code inside the functin
+    // only one time, at the creation of the component
+    // - passing only code as a parameter to useState method, will run the code on every render
+    () => {
+      console.log("initializing notes from local storage");
+      return JSON.parse(localStorage.getItem("notes") || "[]") as Note[];
+    });
   const [currentNoteId, setCurrentNoteId] = React.useState(
     (notes[0] && notes[0].id) || ""
   )
@@ -26,6 +31,13 @@ export default function App() {
     console.log("writing notes to localStorage on render if changes exist")
     localStorage.setItem("notes", JSON.stringify(notes));
   }, [notes])
+
+  function deleteNote(event: React.MouseEvent, noteId: string) {
+    event.stopPropagation();
+    setNotes(oldNotes => {
+      return oldNotes.filter(note => note.id != noteId);
+    })
+}
 
   function createNewNote() {
     const newNote: Note = {
@@ -37,11 +49,18 @@ export default function App() {
   }
 
   function updateNote(text: string) {
-    setNotes(oldNotes => oldNotes.map(oldNote => {
-      return oldNote.id === currentNoteId
-        ? { ...oldNote, body: text }
-        : oldNote
-    }))
+    setNotes(oldNotes => {
+      let newNotesArray: Note[] = [];
+      for (let i = 0; i < oldNotes.length; i++) {
+        let note: Note = oldNotes[i];
+        if (note.id == currentNoteId) {
+          newNotesArray.unshift({ ...note, body: text });
+        } else {
+          newNotesArray.push(note);
+        }
+      }
+      return newNotesArray;
+    })
   }
 
   function findCurrentNote(): Note {
@@ -65,9 +84,10 @@ export default function App() {
               currentNote={findCurrentNote()}
               setCurrentNoteId={setCurrentNoteId}
               newNote={createNewNote}
+              deleteNote={deleteNote}
             />
             {
-              currentNoteId &&              
+              currentNoteId &&
               <Editor
                 currentNote={findCurrentNote()}
                 updateNote={updateNote}
