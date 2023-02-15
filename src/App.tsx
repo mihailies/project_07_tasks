@@ -44,7 +44,7 @@ export default function App() {
     }))
   }
 
-  function findCurrentNote() {
+  function findCurrentNote(): Note {
     return notes.find(note => {
       return note.id === currentNoteId
     }) || notes[0]
